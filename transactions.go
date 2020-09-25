@@ -1,82 +1,65 @@
 package main
 
-import (
-	"encoding/json"
-	"math/big"
-	"net/http"
-	"time"
+// Insert inserts a given tx into the Transactions structure
+// with the correct time ordering
+func (t *Transactions) Insert(tx *Transaction) int {
+	t.Lock()
+	defer t.Unlock()
 
-	log "github.com/sirupsen/logrus"
-)
+	l := len(t.T)
 
-func (app *App) getTransactions(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(app.Transactions)
-}
-
-func (app *App) addTransaction(w http.ResponseWriter, r *http.Request) {
-	var body map[string]string
-
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("Body decoding error: %v", err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	// Trivial case O(1)
+	if l == 0 {
+		t.T = append(t.T, tx)
+		return 0
 	}
 
-	for _, key := range transactionFields {
-		if _, ok := body[key]; !ok {
-			log.Printf("Body key '%s' not present in body", key)
-			w.WriteHeader(http.StatusBadRequest)
-			return
+	// Given TX becomes the oldest O(n)
+	if tx.Timestamp.Before(t.T[0].Timestamp) {
+		t.T = insertTransaction(t.T, 0, tx)
+		return 0
+	}
+
+	// Given TX becomes the newest O(1)
+	if tx.Timestamp.After(t.T[l-1].Timestamp) {
+		t.T = append(t.T, tx)
+		return l - 1
+	}
+
+	// If not one of the trivial cases
+	// we follow with a binary search algorithm
+
+	low := 0
+	high := l - 1
+
+	var (
+		mid int
+		pos int
+	)
+
+	for {
+		// The integer division floors the result
+		mid = low + (high-low)/2
+
+		if tx.Timestamp.After(t.T[mid].Timestamp) {
+			low = mid
+		} else {
+			high = mid
+		}
+
+		// If we found a space of length one
+		// we already done
+		if high-low <= 1 {
+			if tx.Timestamp.After(t.T[low].Timestamp) {
+				pos = high
+			} else {
+				pos = low
+			}
+
+			break
 		}
 	}
 
-	z := new(big.Float)
-
-	// Try to parse arbitrary precision big.Float from
-	// the "amount" field
-	f, _, err := z.Parse(body["amount"], 10)
-	if err != nil {
-		log.Printf("Could not parse 'amount' field: %v", err.Error())
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	// Try to parse ISO 8601 timestamp
-	// isoFormat := "2006-02-01T15:14:05.999Z"
-	t, err := time.Parse(time.RFC3339Nano, body["timestamp"])
-	if err != nil {
-		log.Printf("Could not parse 'timestamp' field: %v", err.Error())
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	now := time.Now()
-
-	// Check if the given transaction time is in the future
-	if t.After(now) {
-		log.Printf("The given timestamp (%s) is in the future", t)
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	// Check if the transaction is older than 60 seconds
-	if diff := t.Sub(now); diff < -60*time.Second {
-		w.WriteHeader(http.StatusNoContent)
-	}
-
-	app.Transactions = append(app.Transactions, Transaction{
-		Amount:    f,
-		Timestamp: t,
-	})
-
-	// If everything went OK return created status code
-	w.WriteHeader(http.StatusCreated)
-}
-
-func (app *App) deleteTransactions(w http.ResponseWriter, r *http.Request) {
-	// Handle the deletion of all the transactions
-	app.Transactions = make([]Transaction, 0)
-
-	// Return empty response with no content status code
-	w.WriteHeader(http.StatusNoContent)
+	t.T = insertTransaction(t.T, pos, tx)
+	return pos
 }

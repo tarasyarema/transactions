@@ -1,8 +1,35 @@
 # Transactions
 
+## To run
+
+Just run `make`.
+To run the tests `make test`.
+
 ## API
 
 ### `/transactions`
+
+#### `GET`
+
+Get the transactions db.
+
+##### Example response
+```json
+[
+  {
+    "amount": 88,
+    "timestamp": "2020-09-25T20:05:48.539Z"
+  },
+  {
+    "amount": 27,
+    "timestamp": "2020-09-25T20:05:49.100Z"
+  }
+]
+```
+
+##### Return codes
+- 201: If OK.
+- 500: If something weird happened.
 
 #### `POST`
 
@@ -21,10 +48,7 @@ Passed in the request body (JSON)
 }
 ```
 
-##### Return parameters
-None.
-
-##### Returns
+##### Return codes
 - 201: If OK.
 - 204: If transaction older than 60 seconds
 - 400: JSON is invalid
@@ -33,24 +57,10 @@ None.
 
 #### `DELETE`
 
-Deletes all transactions. 
-
-##### Parameters
-Accepts empty request body.
-
-##### Example request body
-```json
-{}
-```
-
-##### Return parameters
-None.
+Deletes all transactions.
 
 ##### Returns
 - 204: If OK , it may also return the number of transactions deleted, for example.
-
-It may also return some other code if there where some problem deleting the transactions.
-
 
 ### `/statistics`
 
@@ -58,22 +68,12 @@ It may also return some other code if there where some problem deleting the tran
 
 Returns the statistic based of the transactions of the last 60 seconds.
 
-##### Parameters
-Accepts empty request body.
-
-##### Example request body
-```json
-{}
-```
-
 ##### Return parameters
-- `sum`: BigDecimal specifying the total sum of transaction value in the last 60 seconds
-- `avg`: BigDecimal specifying the average amount of transaction value in the last 60 seconds
-- `max`: BigDecimal specifying single highest transaction value in the last 60 seconds
-- `min`: BigDecimal specifying single lowest transaction value in the last 60 seconds
+- `sum`: decimal specifying the total sum of transaction value in the last 60 seconds
+- `avg`: decimal specifying the average amount of transaction value in the last 60 seconds
+- `max`: decimal specifying single highest transaction value in the last 60 seconds
+- `min`: decimal specifying single lowest transaction value in the last 60 seconds
 - `count`: a long specifying the total number of transactions that happened in the last 60 seconds
-
-All BigDecimal values always contain exactly two decimal places and use HALF_ROUND_UP rounding. eg: 10.345 is returned as 10.35, 10.8 is returned as 10.80.
 
 ##### Example response
 ```json
@@ -81,7 +81,13 @@ All BigDecimal values always contain exactly two decimal places and use HALF_ROU
     "sum": "1000.00",
     "avg": "100.53",
     "max": "200000.49",
+    "max_queue": [
+        ...
+    ],
     "min": "50.23",
+    "min_queue": [
+        ...
+    ],
     "count": 10
 }
 ```
