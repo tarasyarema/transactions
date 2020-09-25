@@ -1,5 +1,18 @@
 # Transactions
 
+## Structure
+
+- [main.go](./main.go): Main entrypoint, configurations stuff.
+- [middleware.go](./middleware.go): Middleware for logging purposes.
+- [router.go](./router.go): Defines two routers for the avaliable endpoints. Redirects to the handlers.
+- [handlers.go](./handlers.go): The handlers for every REST resource.
+- [models.go](./models.go): The general models and constants definitions. No methods nor functions here.
+- [transactions.go](./transactions.go): The transactions models methods and functions.
+- [statistics.go](./statistics.go): The statistics models methods and functions.
+- [app.go](./app.go): The app model methods and functions. The main DB logic resides here.
+- [utils.go](./utils.go): Utilities and stuff used in other files. Has a [test file](./utils_test.go).
+- [Makefile](./Makefile): The Makefile xd.
+
 ## To run
 
 Just run `make`.
