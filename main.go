@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -21,8 +20,7 @@ func main() {
 		Stats: Stats{
 			S: newStatistic(),
 		},
-		LastID:    0,
-		PurgeTime: 5 * time.Second, // PurgeTime,
+		PurgeTime: PurgeTime,
 	}
 
 	// Define the http handlers

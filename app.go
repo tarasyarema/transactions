@@ -53,7 +53,7 @@ func (a *App) Purge() {
 			a.Stats.S.MinQueue = tmp
 
 			if minQueueLen == 1 {
-				a.Stats.S.Min = -MaxFloat64
+				a.Stats.S.Min = MaxFloat64
 			} else {
 				a.Stats.S.Min = a.Stats.S.MinQueue[minQueueLen-2]
 			}
@@ -65,7 +65,7 @@ func (a *App) Purge() {
 			a.Stats.S.MaxQueue = tmp
 
 			if maxQueueLen == 1 {
-				a.Stats.S.Max = MaxFloat64
+				a.Stats.S.Max = -MaxFloat64
 			} else {
 				a.Stats.S.Max = a.Stats.S.MaxQueue[maxQueueLen-2]
 			}

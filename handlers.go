@@ -92,7 +92,6 @@ func (app *App) deleteTransactions(w http.ResponseWriter, r *http.Request) {
 	// Reset everything
 	app.Transactions.T = make([]*Transaction, 0)
 	app.Stats.S = newStatistic()
-	app.LastID = 0
 
 	// Return empty response with no content status code
 	w.WriteHeader(http.StatusNoContent)

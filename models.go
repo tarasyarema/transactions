@@ -19,9 +19,6 @@ type App struct {
 	// Current stats
 	Stats Stats
 
-	// The first tx to expire
-	LastID int
-
 	// Defines the Purge interval
 	PurgeTime time.Duration
 }
@@ -54,10 +51,10 @@ type Statistic struct {
 	Avg float64 `json:"avg"`
 
 	Max      float64   `json:"max"`
-	MaxQueue []float64 `json:"max_queue"`
+	MaxQueue []float64 `json:"-"`
 
 	Min      float64   `json:"min"`
-	MinQueue []float64 `json:"min_queue"`
+	MinQueue []float64 `json:"-"`
 
 	Count int64 `json:"count"`
 }
