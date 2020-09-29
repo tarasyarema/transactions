@@ -1,5 +1,9 @@
 # Transactions
 
+> A RESTful API for transactions statistics. Its main use case is to calculate realtime statistics for the last 60 seconds of transactions.
+
+Implementation of a interview process coding challenge. You can look at the original question [here](./challenge.txt).
+
 ## Structure
 
 - [main.go](./main.go): Main entrypoint, configurations stuff.
@@ -94,13 +98,7 @@ Returns the statistic based of the transactions of the last 60 seconds.
     "sum": "1000.00",
     "avg": "100.53",
     "max": "200000.49",
-    "max_queue": [
-        ...
-    ],
     "min": "50.23",
-    "min_queue": [
-        ...
-    ],
     "count": 10
 }
 ```
